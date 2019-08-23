@@ -2,16 +2,19 @@
 #include <sdktools>
 #include <DynamicChannels>
 
+#pragma semicolon 1
+#pragma newdecls required
+
 public Plugin myinfo =
 {
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses",
-	version = "1.0",
+	version = "1.0.1",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
-ConVar warnings;
+ConVar g_Warnings;
 bool g_ChannelsOverflowing = false;
 bool g_BadMapChannels = false;
 bool g_MapChannels[6];
@@ -19,7 +22,7 @@ int g_GroupChannels[] = {-1, -1, -1, -1, -1, -1};
 
 public void OnPluginStart()
 {
-	warnings = CreateConVar("sm_dynamic_channels_warnings", "1", "Should channel overflow & bad channel warnings be sent to high level admins?");
+	g_Warnings = CreateConVar("sm_dynamic_channels_warnings", "1", "Should channel overflow & bad channel warnings be sent to high level admins?");
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -28,7 +31,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	return APLRes_Success;
 }
 
-public OnMapStart()
+public void OnMapStart()
 {
 	int ent = -1;
 
@@ -54,7 +57,7 @@ public OnMapStart()
 			}
 			else
 			{
-				if (warnings.IntValue && !g_BadMapChannels)
+				if (g_Warnings.IntValue && !g_BadMapChannels)
 				{
 					for (int client = 1; client <= MaxClients; client++)
 					{
@@ -112,7 +115,7 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 
 		if (channel == -1)
 		{
-			if (warnings.IntValue && !g_ChannelsOverflowing)
+			if (g_Warnings.IntValue && !g_ChannelsOverflowing)
 			{
 				for (int client = 1; client <= MaxClients; client++)
 				{
@@ -161,7 +164,7 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 
 public void OnClientPostAdminCheck(int client)
 {
-	if (CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP) && warnings.IntValue)
+	if (CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP) && g_Warnings.IntValue)
 		CreateTimer(10.0, MsgAdmin, client);
 }
 

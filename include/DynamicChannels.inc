@@ -5,7 +5,8 @@
  
 /**
  * Provides a game_text channel for plugins to use that will prevent conflict with map channels.
- * The group number is a way of sharing the same game_text channel between certain plugins, using the same group number will always return the same game_text channel (for the session that is)
+ * The group number is a way of sharing the same game_text channel between certain function calls/plugins, using the same group number will always return the same game_text channel (for the session that is)
+ * For more help, see ExamplePlugin.sp and README.md at https://github.com/Vauff/DynamicChannels
  *
  * @param group		Integer value of the group you want to get a game_text channel for. Must be between 0-5.
  * @return			The integer value of the assigned game_text channel.
