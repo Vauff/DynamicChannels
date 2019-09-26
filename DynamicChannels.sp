@@ -10,7 +10,7 @@ public Plugin myinfo =
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses",
-	version = "1.0.1",
+	version = "1.0.2",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
@@ -62,7 +62,7 @@ public void OnMapStart()
 					for (int client = 1; client <= MaxClients; client++)
 					{
 						// I highly doubt this will ever be used, but just in case an admin manages to be in-game immediately...
-						if (CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP))
+						if (IsValidClient(client) && CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP))
 							PrintToChat(client, " \x02[Dynamic Channels] \x07This map is using bad channel numbers! It is highly recommended to fix this with stripper to prevent the game auto-assigning the channel and causing conflicts");
 					}
 				}
@@ -119,7 +119,7 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 			{
 				for (int client = 1; client <= MaxClients; client++)
 				{
-					if (CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP))
+					if (IsValidClient(client) && CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP))
 						PrintToChat(client, " \x02[Dynamic Channels] \x07game_text channels are overflowing! Consider reducing the amount of channels used by the map or plugins");
 				}
 			}
@@ -170,8 +170,18 @@ public void OnClientPostAdminCheck(int client)
 
 public Action MsgAdmin(Handle timer, int client)
 {
-	if (g_ChannelsOverflowing)
+	if (g_ChannelsOverflowing && IsValidClient(client))
 		PrintToChat(client, " \x02[Dynamic Channels] \x07game_text channels are overflowing! Consider reducing the amount of channels used by the map or plugins");
-	if (g_BadMapChannels)
+	if (g_BadMapChannels && IsValidClient(client))
 		PrintToChat(client, " \x02[Dynamic Channels] \x07This map is using bad channel numbers! It is highly recommended to fix this with stripper to prevent the game auto-assigning the channel and causing conflicts");
+}
+
+bool IsValidClient(int client, bool nobots = false)
+{
+	if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
+	{
+		return false;
+	}
+
+	return IsClientInGame(client);
 }
