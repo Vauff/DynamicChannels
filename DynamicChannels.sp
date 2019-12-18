@@ -10,7 +10,7 @@ public Plugin myinfo =
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses",
-	version = "1.0.2",
+	version = "1.1",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
@@ -59,12 +59,11 @@ public void OnMapStart()
 			{
 				if (g_Warnings.IntValue && !g_BadMapChannels)
 				{
-					for (int client = 1; client <= MaxClients; client++)
-					{
-						// I highly doubt this will ever be used, but just in case an admin manages to be in-game immediately...
-						if (IsValidClient(client) && CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP))
-							PrintToChat(client, " \x02[Dynamic Channels] \x07This map is using bad channel numbers! It is highly recommended to fix this with stripper to prevent the game auto-assigning the channel and causing conflicts");
-					}
+					char map[128];
+
+					CreateTimer(10.0, MsgAdminTimer, 2);
+					GetCurrentMap(map, sizeof(map));
+					LogMessage("%s is using bad channel numbers! It is highly recommended to fix this with stripper to prevent the game auto-assigning the channel and causing conflicts", map);
 				}
 
 				g_BadMapChannels = true;
@@ -117,11 +116,11 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 		{
 			if (g_Warnings.IntValue && !g_ChannelsOverflowing)
 			{
-				for (int client = 1; client <= MaxClients; client++)
-				{
-					if (IsValidClient(client) && CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP))
-						PrintToChat(client, " \x02[Dynamic Channels] \x07game_text channels are overflowing! Consider reducing the amount of channels used by the map or plugins");
-				}
+				char map[128];
+
+				CreateTimer(1.0, MsgAdminTimer, 1);
+				GetCurrentMap(map, sizeof(map));
+				LogMessage("game_text channels are overflowing! Consider reducing the amount of channels used by %s or plugins", map);
 			}
 
 			g_ChannelsOverflowing = true;
@@ -165,10 +164,10 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 public void OnClientPostAdminCheck(int client)
 {
 	if (CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP) && g_Warnings.IntValue)
-		CreateTimer(10.0, MsgAdmin, client);
+		CreateTimer(10.0, MsgAdminJoinTimer, client);
 }
 
-public Action MsgAdmin(Handle timer, int client)
+public Action MsgAdminJoinTimer(Handle timer, int client)
 {
 	if (g_ChannelsOverflowing && IsValidClient(client))
 		PrintToChat(client, " \x02[Dynamic Channels] \x07game_text channels are overflowing! Consider reducing the amount of channels used by the map or plugins");
@@ -176,12 +175,30 @@ public Action MsgAdmin(Handle timer, int client)
 		PrintToChat(client, " \x02[Dynamic Channels] \x07This map is using bad channel numbers! It is highly recommended to fix this with stripper to prevent the game auto-assigning the channel and causing conflicts");
 }
 
+public Action MsgAdminTimer(Handle timer, int mode)
+{
+	for (int client = 1; client <= MaxClients; client++)
+	{
+		if (IsValidClient(client) && CheckCommandAccess(client, "", ADMFLAG_CHANGEMAP))
+		{
+			if (mode == 1)
+			{
+				if (IsValidClient(client))
+					PrintToChat(client, " \x02[Dynamic Channels] \x07game_text channels are overflowing! Consider reducing the amount of channels used by the map or plugins");
+			}
+			else if (mode == 2)
+			{
+				if (IsValidClient(client))
+					PrintToChat(client, " \x02[Dynamic Channels] \x07This map is using bad channel numbers! It is highly recommended to fix this with stripper to prevent the game auto-assigning the channel and causing conflicts");
+			}
+		}
+	}
+}
+
 bool IsValidClient(int client, bool nobots = false)
 {
 	if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
-	{
 		return false;
-	}
 
 	return IsClientInGame(client);
 }
