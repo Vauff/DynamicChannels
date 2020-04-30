@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses",
-	version = "2.0",
+	version = "2.0.1",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
@@ -26,9 +26,6 @@ bool g_BadMapChannels = false;
 bool g_MapChannels[6];
 
 int g_GroupChannels[] = {-1, -1, -1, -1, -1, -1};
-
-float g_LastMapChanUpdate = 0.00;
-float g_LastPluginChanUpdate = 0.00;
 
 bool g_NotifiedBadChans[MAXPLAYERS + 1] = false;
 bool g_NotifiedOverflow[MAXPLAYERS + 1] = false;
@@ -75,7 +72,7 @@ public void OnAllPluginsLoaded()
 		g_dHooks = true;
 
 		//bool CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID )
-		//game/server/baseentity.cpp line 4457
+		//game/server/baseentity.cpp line 4457 (in csgo source code leak)
 		g_AcceptInput = DHookCreate(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity, AcceptInput);
 		DHookAddParam(g_AcceptInput, HookParamType_CharPtr);
 		DHookAddParam(g_AcceptInput, HookParamType_CBaseEntity);
@@ -97,8 +94,6 @@ public void OnMapStart()
 	g_ChannelsOverflowing = false;
 	g_BadMapChannels = false;
 	g_GroupChannels = {-1, -1, -1, -1, -1, -1};
-	g_LastMapChanUpdate = 0.00;
-	g_LastPluginChanUpdate = 0.00;
 
 	CreateTimer(30.0, MsgAdminTimer, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 
@@ -222,13 +217,6 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 		return -1;
 	}
 
-	if (g_LastMapChanUpdate > g_LastPluginChanUpdate)
-	{
-		//map channels have changed, we must now force all plugin group channels to be recalculated
-		g_GroupChannels = {-1, -1, -1, -1, -1, -1};
-		g_LastPluginChanUpdate = GetGameTime();
-	}
-
 	if (g_GroupChannels[group] != -1)
 		return g_GroupChannels[group];
 
@@ -336,7 +324,9 @@ void AddMapChannel(int channel)
 		if (!g_MapChannels[channel])
 		{
 			g_MapChannels[channel] = true;
-			g_LastMapChanUpdate = GetGameTime();
+
+			//map channels have changed, we must now force all plugin group channels to be recalculated
+			g_GroupChannels = {-1, -1, -1, -1, -1, -1};
 		}
 	}
 	else
