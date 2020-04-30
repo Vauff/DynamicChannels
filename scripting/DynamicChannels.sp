@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses",
-	version = "2.0.1",
+	version = "2.0.2",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
@@ -281,15 +281,10 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 			if (!keepSearching)
 				break;
 		}
+	}
 
-		g_GroupChannels[group] = channel;
-		return channel;
-	}
-	else
-	{
-		g_GroupChannels[group] = channel;
-		return channel;
-	}
+	g_GroupChannels[group] = channel;
+	return channel;
 }
 
 public Action MsgAdminTimer(Handle timer)
@@ -300,7 +295,7 @@ public Action MsgAdminTimer(Handle timer)
 	for (int client = 1; client <= MaxClients; client++)
 	{
 		if (!IsValidClient(client) || !CheckCommandAccess(client, "", ADMFLAG_ROOT))
-			return Plugin_Continue;
+			continue;
 
 		if (g_ChannelsOverflowing && !g_NotifiedOverflow[client])
 		{
