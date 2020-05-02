@@ -114,6 +114,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 		if (g_dHooks)
 			DHookEntity(g_AcceptInput, true, entity);
 
+		//have to delay GetEntProp(), otherwise m_textParms.channel is always 0
 		CreateTimer(0.1, GameTextCreated, entity);
 	}
 }

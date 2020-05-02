@@ -6,7 +6,7 @@ Provides a native for plugins to implement that handles automatic game_text chan
 
 The plugin should theoretically work for any Source game with a 6 channel game_text entity. However, DHooks support is only added for CS:GO & CS:S, so the plugin won't be able to hook live game_text channel updates from maps on other games.
 
-**For this plugin to work properly, game_text channels must only be used by maps and by plugins via the GetDynamicChannel native. This means that all plugins using ShowHudText() or game_text entity creation need to use GetDynamicChannel() for the channel number. ShowSyncHudText() should not be used at all.**
+**For this plugin to work properly, game_text channels must only be used by maps and by plugins via the GetDynamicChannel native. This means that all plugins using ShowHudText() need to use GetDynamicChannel() for the channel number. ShowSyncHudText() or game_text entity creation should not be used by plugins at all.**
 
 ## Example Usage
 
