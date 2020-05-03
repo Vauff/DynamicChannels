@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses",
-	version = "2.0.2",
+	version = "2.0.3",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
@@ -267,7 +267,7 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 			{
 				if (g_GroupChannels[i] == channel)
 				{
-					if (i == 5)
+					if (channel == 5)
 					{
 						channel = -1;
 						break;
