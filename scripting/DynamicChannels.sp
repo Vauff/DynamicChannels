@@ -13,7 +13,7 @@ public Plugin myinfo =
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses",
-	version = "2.0.4",
+	version = "2.0.5",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
@@ -40,6 +40,8 @@ public void OnPluginStart()
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	CreateNative("GetDynamicChannel", Native_GetDynamicChannel);
+	RegPluginLibrary("DynamicChannels");
+
 	return APLRes_Success;
 }
 
@@ -47,7 +49,10 @@ public void OnAllPluginsLoaded()
 {
 	if (LibraryExists("dhooks"))
 	{
-		if (!FileExists("addons/sourcemod/gamedata/DynamicChannels.games.txt"))
+		char path[PLATFORM_MAX_PATH];
+		BuildPath(Path_SM, path, sizeof(path), "gamedata/DynamicChannels.games.txt");
+
+		if (!FileExists(path))
 		{
 			LogError("Missing gamedata! The plugin will not be able to hook live game_text channel updates from maps");
 			return;

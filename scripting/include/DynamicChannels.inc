@@ -13,3 +13,19 @@
  * @return			The integer value of the assigned game_text channel.
  */
 native int GetDynamicChannel(int group);
+
+public SharedPlugin __pl_DynamicChannels = {
+	name = "DynamicChannels",
+	file = "DynamicChannels.smx",
+#if defined REQUIRE_PLUGIN
+	required = 1,
+#else
+	required = 0,
+#endif
+};
+
+#if !defined REQUIRE_PLUGIN
+public void __pl_DynamicChannels_SetNTVOptional() {
+	MarkNativeAsOptional("GetDynamicChannel");
+}
+#endif
