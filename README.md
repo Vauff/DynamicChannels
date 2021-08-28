@@ -2,11 +2,13 @@
 
 Provides a native for plugins to implement that handles automatic game_text channel assigning based on what channels the current map uses. This means game_text channel conflicts can be completely be avoided when dealing with 6 or less total channels. When going over 6 channels, conflicts are inevitable, however effects are minimized. The **sm_debugchannels** command is also available to root admins to see the overall state of all channel assignments.
 
-[DHooks](https://forums.alliedmods.net/showpost.php?p=2588686&postcount=589) is an optional (but recommended) dependency for this plugin, it enables hooking of live game_text channel updates from maps for better accuracy.
-
-The plugin should theoretically work for any Source game with a 6 channel game_text entity. However, DHooks support is only added for CS:GO & CS:S, so the plugin won't be able to hook live game_text channel updates from maps on other games.
+This plugin should theoretically work for any Source game with a 6 channel game_text entity. However, it has only been tested on CS:GO.
 
 **For this plugin to work properly, game_text channels must only be used by maps and by plugins via the GetDynamicChannel native. This means that all plugins using ShowHudText() need to use GetDynamicChannel() for the channel number. ShowSyncHudText() or game_text entity creation should not be used by plugins at all.**
+
+## Requirements
+
+- [DHooks](https://forums.alliedmods.net/showpost.php?p=2588686&postcount=589)
 
 ## Example Usage
 
