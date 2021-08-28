@@ -13,13 +13,13 @@ public Plugin myinfo =
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
-public void OnPluginStart() 
+public void OnPluginStart()
 {
 	RegConsoleCmd("sm_basicexample", Command_BasicExample, "Basic code example for using the dynamic channels plugin");
 	RegConsoleCmd("sm_grouptest", Command_GroupTest, "Displays a game_text message saying what group number and channel number it is running on, takes the group number as only argument");
 }
 
-public Action Command_BasicExample(int client, int args) 
+public Action Command_BasicExample(int client, int args)
 {
 	/*
 		This is the most basic usage case for the DynamicChannels plugin
@@ -39,7 +39,7 @@ public Action Command_BasicExample(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action Command_GroupTest(int client, int args) 
+public Action Command_GroupTest(int client, int args)
 {
 	/*
 		This works similar to the above command
