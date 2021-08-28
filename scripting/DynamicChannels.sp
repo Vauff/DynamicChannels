@@ -30,6 +30,7 @@ public void OnPluginStart()
 	g_cvWarnings = CreateConVar("sm_dynamic_channels_warnings", "1", "Should channel overflow & bad channel warnings be sent to root admins?");
 
 	RegAdminCmd("sm_debugchannels", Command_DebugChannels, ADMFLAG_ROOT, "Prints debugging information to console about the current states of game_text channels");
+	AutoExecConfig(true, "DynamicChannels");
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
