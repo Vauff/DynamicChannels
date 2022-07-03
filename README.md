@@ -6,10 +6,6 @@ This plugin should theoretically work for any Source game with a 6 channel game_
 
 **For this plugin to work properly, game_text channels must only be used by maps and by plugins via the GetDynamicChannel native. This means that all plugins using ShowHudText() need to use GetDynamicChannel() for the channel number. ShowSyncHudText() or game_text entity creation should not be used by plugins at all.**
 
-## Requirements
-
-- [DHooks](https://forums.alliedmods.net/showpost.php?p=2588686&postcount=589)
-
 ## Example Usage
 
 ```
