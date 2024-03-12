@@ -18,6 +18,7 @@ Handle g_hAcceptInput;
 ConVar g_cvWarnings;
 
 int g_iGroupChannels[] = {-1, -1, -1, -1, -1, -1};
+int g_iMaxEntities = 2048;
 
 bool g_bChannelsOverflowing = false;
 bool g_bBadMapChannels = false;
@@ -67,6 +68,7 @@ public void OnAllPluginsLoaded()
 
 public void OnMapStart()
 {
+	g_iMaxEntities = GetMaxEntities();
 	g_bChannelsOverflowing = false;
 	g_bBadMapChannels = false;
 	g_iGroupChannels = {-1, -1, -1, -1, -1, -1};
@@ -85,7 +87,7 @@ public void OnClientPutInServer(int client)
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	if (!StrEqual(classname, "game_text"))
+	if (entity >= g_iMaxEntities || entity < 0 || !StrEqual(classname, "game_text"))
 		return;
 
 	DHookEntity(g_hAcceptInput, true, entity);
