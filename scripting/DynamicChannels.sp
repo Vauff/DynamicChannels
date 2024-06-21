@@ -10,7 +10,7 @@ public Plugin myinfo =
 	name = "Dynamic Game_Text Channels",
 	author = "Vauff",
 	description = "Provides a native for plugins to implement that handles automatic game_text channel assignment based on current map channels",
-	version = "2.1.2",
+	version = "2.1.3",
 	url = "https://github.com/Vauff/DynamicChannels"
 };
 
@@ -87,7 +87,7 @@ public void OnClientPutInServer(int client)
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-	if (entity >= g_iMaxEntities || entity < 0 || !StrEqual(classname, "game_text"))
+	if (entity >= g_iMaxEntities || entity < 0 || strcmp(classname, "game_text", false) != 0)
 		return;
 
 	DHookEntity(g_hAcceptInput, true, entity);
@@ -119,7 +119,7 @@ public MRESReturn AcceptInput(int pThis, Handle hReturn, Handle hParams)
 	char input[128];
 	DHookGetParamString(hParams, 1, input, sizeof(input));
 
-	if (StrEqual("AddOutput", input, false))
+	if (strcmp("AddOutput", input, false) == 0)
 	{
 		char parameter[256];
 		char splitParameter[256];
@@ -127,7 +127,7 @@ public MRESReturn AcceptInput(int pThis, Handle hReturn, Handle hParams)
 		DHookGetParamObjectPtrString(hParams, 4, 0, ObjectValueType_String, parameter, sizeof(parameter));
 		SplitString(parameter, " ", splitParameter, sizeof(splitParameter));
 
-		if (StrEqual(splitParameter, "channel", false))
+		if (strcmp(splitParameter, "channel", false) == 0)
 		{
 			AddMapChannel(GetEntProp(pThis, Prop_Data, "m_textParms.channel"));
 			return MRES_Handled;
@@ -209,7 +209,7 @@ public int Native_GetDynamicChannel(Handle plugin, int params)
 			char map[128];
 
 			GetCurrentMap(map, sizeof(map));
-			LogMessage("game_text channels are overflowing! Consider reducing the amount of channels used by %s or plugins", map);
+			LogError("game_text channels are overflowing! Consider reducing the amount of channels used by %s or plugins", map);
 		}
 
 		g_bChannelsOverflowing = true;
